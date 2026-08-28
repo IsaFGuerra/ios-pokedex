@@ -6,6 +6,7 @@ struct PokemonListView: View {
 
     @State private var viewModel: PokemonListViewModel
     @State private var notImplemented: String?
+    @State private var loadingMessage = PokemonTrivia.random()
 
     init(viewModel: PokemonListViewModel) {
         _viewModel = State(initialValue: viewModel)
@@ -37,7 +38,7 @@ struct PokemonListView: View {
     private var content: some View {
         switch viewModel.state {
         case .loading:
-            StateView(content: .loading)
+            StateView(content: .loading(message: loadingMessage))
 
         case .loaded(let rows):
             list(rows)
@@ -47,7 +48,10 @@ struct PokemonListView: View {
 
         case .failure(let message):
             StateView(content: .failure(message: message)) {
-                Task { await viewModel.load() }
+                Task {
+                    loadingMessage = PokemonTrivia.random()
+                    await viewModel.load()
+                }
             }
         }
     }
@@ -57,7 +61,7 @@ struct PokemonListView: View {
             ForEach(Array(rows.enumerated()), id: \.element.id) { index, row in
                 Button {
                     // TODO (Tarefa 3): abrir a tela de detalhe deste Pokémon.
-                    notImplemented = "Detalhe de \(row.name)"
+                    notImplemented = "Detalhe de \(row.displayName)"
                 } label: {
                     HStack {
                         PokemonRow(row: row)
