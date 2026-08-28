@@ -2,14 +2,20 @@ import Foundation
 
 /// O que uma linha da lista precisa para se desenhar.
 struct PokemonRowModel: Identifiable, Equatable {
-    let name: String
+    let id: Int
+    let displayName: String
+    let pokedexNumber: String
+    let spriteURL: URL?
+    let types: [String]
     let detailURL: URL
 
-    var id: URL { detailURL }
-
-    init(summary: PokemonSummary) {
-        self.name = summary.name
-        self.detailURL = summary.detailURL
+    init(detail: PokemonDetail, detailURL: URL) {
+        self.id = detail.id
+        self.displayName = formatPokemonName(detail.name)
+        self.pokedexNumber = formatPokedexNumber(detail.id)
+        self.spriteURL = detail.spriteURL
+        self.types = detail.types
+        self.detailURL = detailURL
     }
 }
 
@@ -28,6 +34,7 @@ final class PokemonListViewModel {
     private(set) var state: State = .loading
 
     private let fetchPage: FetchPokemonPageUseCase
+    private let fetchDetail: FetchPokemonDetailUseCase
     private var offset = 0
     private var hasNextPage = true
     private var isLoadingNextPage = false
@@ -35,6 +42,7 @@ final class PokemonListViewModel {
     init() {
         let repository = RemotePokemonRepository(client: URLSessionHTTPClient())
         self.fetchPage = DefaultFetchPokemonPageUseCase(repository: repository)
+        self.fetchDetail = DefaultFetchPokemonDetailUseCase(repository: repository)
     }
 
     func load() async {
@@ -57,7 +65,7 @@ final class PokemonListViewModel {
     private func loadFirstPage() async {
         do {
             let page = try await fetchPage.execute(offset: offset)
-            let rows = page.items.map(PokemonRowModel.init(summary:))
+            let rows = try await fetchDetails(for: page.items)
             offset += page.items.count
             hasNextPage = page.hasNextPage
             state = rows.isEmpty ? .empty : .loaded(rows)
@@ -66,10 +74,8 @@ final class PokemonListViewModel {
         }
     }
 
-    // MARK: - TODO (Tarefa 1)
-    //
-    // A lista carrega só a primeira página (20 Pokémon).
-    // Este método é chamado pela View a cada linha que aparece na tela.
+    // MARK: - Paginação
+
     func loadNextPageIfNeeded(displayingRowAt index: Int) async {
         guard case .loaded(let rows) = state else { return }
         guard hasNextPage, !isLoadingNextPage else { return }
@@ -82,7 +88,7 @@ final class PokemonListViewModel {
 
         do {
             let page = try await fetchPage.execute(offset: offset)
-            let newRows = page.items.map(PokemonRowModel.init(summary:))
+            let newRows = try await fetchDetails(for: page.items)
             guard !newRows.isEmpty else {
                 hasNextPage = false
                 return
@@ -92,7 +98,26 @@ final class PokemonListViewModel {
             hasNextPage = page.hasNextPage
             state = .loaded(rows + newRows)
         } catch {
-            // Mantém a lista visível se a paginação falhar no meio do scroll.
+        }
+    }
+
+    private func fetchDetails(for entries: [PokemonListEntry]) async throws -> [PokemonRowModel] {
+        try await withThrowingTaskGroup(of: (Int, PokemonRowModel).self) { group in
+            for (index, entry) in entries.enumerated() {
+                group.addTask {
+                    guard let id = entry.detailID else {
+                        throw NetworkError.decodingFailed
+                    }
+                    let detail = try await self.fetchDetail.execute(id: id)
+                    let row = PokemonRowModel(detail: detail, detailURL: entry.detailURL)
+                    return (index, row)
+                }
+            }
+            var pairs: [(Int, PokemonRowModel)] = []
+            for try await pair in group {
+                pairs.append(pair)
+            }
+            return pairs.sorted { $0.0 < $1.0 }.map(\.1)
         }
     }
 }
