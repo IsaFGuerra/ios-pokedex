@@ -13,12 +13,16 @@ final class PokemonRepositoryStub: PokemonRepository {
     }
 
     private(set) var calls: [Call] = []
+    private(set) var detailCalls: [Int] = []
 
     /// Resultado devolvido quando não há nada configurado para o offset.
     var defaultResult: Result<PokemonPage, Error> = .success(.stub())
 
     /// Resultado por offset, quando o teste precisa de páginas diferentes.
     var resultsByOffset: [Int: Result<PokemonPage, Error>] = [:]
+
+    var defaultDetailResult: Result<PokemonDetail, Error> = .success(.stub())
+    var detailsByID: [Int: Result<PokemonDetail, Error>] = [:]
 
     func fetchPage(offset: Int, limit: Int) async throws -> PokemonPage {
         calls.append(Call(offset: offset, limit: limit))
@@ -27,11 +31,19 @@ final class PokemonRepositoryStub: PokemonRepository {
         case .failure(let error): throw error
         }
     }
+
+    func fetchDetail(id: Int) async throws -> PokemonDetail {
+        detailCalls.append(id)
+        switch detailsByID[id] ?? defaultDetailResult {
+        case .success(let detail): return detail
+        case .failure(let error): throw error
+        }
+    }
 }
 
 extension PokemonPage {
     static func stub(
-        items: [PokemonSummary] = [.stub()],
+        items: [PokemonListEntry] = [.stub()],
         totalCount: Int = 1,
         hasNextPage: Bool = false
     ) -> PokemonPage {
@@ -39,11 +51,22 @@ extension PokemonPage {
     }
 }
 
-extension PokemonSummary {
-    static func stub(id: Int = 1, name: String = "bulbasaur") -> PokemonSummary {
-        PokemonSummary(
+extension PokemonListEntry {
+    static func stub(id: Int = 1, name: String = "bulbasaur") -> PokemonListEntry {
+        PokemonListEntry(
             name: name,
             detailURL: URL(string: "https://pokeapi.co/api/v2/pokemon/\(id)/")!
         )
+    }
+}
+
+extension PokemonDetail {
+    static func stub(
+        id: Int = 1,
+        name: String = "bulbasaur",
+        spriteURL: URL? = URL(string: "https://example.com/sprite.png"),
+        types: [String] = ["grass", "poison"]
+    ) -> PokemonDetail {
+        PokemonDetail(id: id, name: name, spriteURL: spriteURL, types: types)
     }
 }

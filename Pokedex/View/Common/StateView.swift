@@ -6,7 +6,7 @@ import SwiftUI
 struct StateView: View {
 
     enum Content: Equatable {
-        case loading
+        case loading(message: String? = nil)
         case empty(message: String)
         case failure(message: String)
     }
@@ -17,9 +17,12 @@ struct StateView: View {
     var body: some View {
         VStack(spacing: Theme.Spacing.m) {
             switch content {
-            case .loading:
+            case .loading(let message):
                 ProgressView()
                     .controlSize(.large)
+                if let message {
+                    messageText(message)
+                }
 
             case .empty(let text):
                 messageText(text)
