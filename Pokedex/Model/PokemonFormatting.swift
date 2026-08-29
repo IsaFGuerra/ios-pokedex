@@ -10,6 +10,22 @@ func formatPokedexNumber(_ id: Int) -> String {
     String(format: "#%03d", id)
 }
 
+func formatHeight(_ decimeters: Int) -> String {
+    let meters = decimeters / 10
+    let tenths = decimeters % 10
+    return "\(meters),\(tenths) m"
+}
+
+func formatWeight(_ hectograms: Int) -> String {
+    let kilograms = hectograms / 10
+    let tenths = hectograms % 10
+    return "\(kilograms),\(tenths) kg"
+}
+
+func statValue(named name: String, in stats: [(name: String, base: Int)]) -> Int? {
+    stats.first { $0.name.lowercased() == name.lowercased() }?.base
+}
+
 private func formatNameToken(_ token: Substring) -> String {
     switch token.lowercased() {
     case "mr": return "Mr."
