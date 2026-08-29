@@ -10,6 +10,10 @@ enum Theme {
         static let secondaryText = SwiftUI.Color.secondary
         static let accent = SwiftUI.Color.indigo
 
+        /// Texto secundário do loading — um pouco mais legível que `.secondary`.
+        static let loadingTriviaLabel = SwiftUI.Color.primary.opacity(0.45)
+        static let loadingTriviaFact = SwiftUI.Color.primary.opacity(0.62)
+
         /// Cor  representando cada tipo de pokemon
         static func forPokemonType(_ type: String) -> SwiftUI.Color {
             switch type.lowercased() {
@@ -41,6 +45,8 @@ enum Theme {
         static let body = SwiftUI.Font.body
         static let caption = SwiftUI.Font.caption
         static let rowTitle = SwiftUI.Font.body.bold()
+        static let loadingTriviaLabel = SwiftUI.Font.system(size: 12, weight: .semibold)
+        static let loadingTriviaBody = SwiftUI.Font.system(size: 17)
     }
 
     enum Spacing {
@@ -48,5 +54,7 @@ enum Theme {
         static let s: CGFloat = 8
         static let m: CGFloat = 16
         static let l: CGFloat = 24
+        static let loadingBlock: CGFloat = 32
+        static let loadingTrivia: CGFloat = 6
     }
 }
