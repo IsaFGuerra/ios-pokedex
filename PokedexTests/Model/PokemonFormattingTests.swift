@@ -39,4 +39,44 @@ final class PokemonFormattingTests: XCTestCase {
         XCTAssertEqual(row.pokedexNumber, "#122")
         XCTAssertEqual(row.types, ["psychic", "fairy"])
     }
+
+    // MARK: - Tarefa 3 (Red)
+
+    func test_formatHeight_decimetrosParaMetros() {
+        XCTAssertEqual(formatHeight(7), "0,7 m")
+    }
+
+    func test_formatHeight_valorInteiroEmMetros() {
+        XCTAssertEqual(formatHeight(10), "1,0 m")
+    }
+
+    func test_formatWeight_hectogramasParaQuilos() {
+        XCTAssertEqual(formatWeight(69), "6,9 kg")
+    }
+
+    func test_formatWeight_valorInteiroEmQuilos() {
+        XCTAssertEqual(formatWeight(100), "10,0 kg")
+    }
+
+    func test_statValue_extraiHP() {
+        XCTAssertEqual(statValue(named: "hp", in: Self.bulbasaurStats), 45)
+    }
+
+    func test_statValue_extraiAttack() {
+        XCTAssertEqual(statValue(named: "attack", in: Self.bulbasaurStats), 49)
+    }
+
+    func test_statValue_extraiDefense() {
+        XCTAssertEqual(statValue(named: "defense", in: Self.bulbasaurStats), 49)
+    }
+
+    func test_statValue_retornaNilQuandoStatNaoExiste() {
+        XCTAssertNil(statValue(named: "speed", in: Self.bulbasaurStats))
+    }
+
+    private static let bulbasaurStats: [(name: String, base: Int)] = [
+        (name: "hp", base: 45),
+        (name: "attack", base: 49),
+        (name: "defense", base: 49),
+    ]
 }
