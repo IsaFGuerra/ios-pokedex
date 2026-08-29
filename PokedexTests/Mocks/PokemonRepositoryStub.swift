@@ -65,8 +65,23 @@ extension PokemonDetail {
         id: Int = 1,
         name: String = "bulbasaur",
         spriteURL: URL? = URL(string: "https://example.com/sprite.png"),
-        types: [String] = ["grass", "poison"]
+        types: [String] = ["grass", "poison"],
+        height: Int = 7,
+        weight: Int = 69,
+        hp: Int = 45,
+        attack: Int = 49,
+        defense: Int = 49
     ) -> PokemonDetail {
-        PokemonDetail(id: id, name: name, spriteURL: spriteURL, types: types)
+        PokemonDetail(
+            id: id,
+            name: name,
+            spriteURL: spriteURL,
+            types: types,
+            height: height,
+            weight: weight,
+            hp: hp,
+            attack: attack,
+            defense: defense
+        )
     }
 }

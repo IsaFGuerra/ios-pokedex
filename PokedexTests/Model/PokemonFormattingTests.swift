@@ -40,7 +40,7 @@ final class PokemonFormattingTests: XCTestCase {
         XCTAssertEqual(row.types, ["psychic", "fairy"])
     }
 
-    // MARK: - Tarefa 3 (Red)
+    // MARK: - Altura, peso e stats
 
     func test_formatHeight_decimetrosParaMetros() {
         XCTAssertEqual(formatHeight(7), "0,7 m")
