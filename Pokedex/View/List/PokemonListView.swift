@@ -1,7 +1,5 @@
 import SwiftUI
 
-/// Lista de Pokémon. Serve de referência de estilo para as telas novas: a View
-/// só observa o estado do ViewModel e desenha, sem regra de negócio aqui dentro.
 struct PokemonListView: View {
 
     @State private var viewModel: PokemonListViewModel
