@@ -15,7 +15,6 @@ enum PokemonTrivia {
     ]
 
     static func random() -> String {
-        let fact = facts.randomElement() ?? facts[0]
-        return "Curiosidade: \(fact)"
+        facts.randomElement() ?? facts[0]
     }
 }

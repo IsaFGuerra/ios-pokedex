@@ -1,8 +1,5 @@
 import SwiftUI
 
-/// View de estado (carregando / vazio / erro), usada no lugar do conteúdo.
-///
-/// Reaproveite nas telas novas em vez de espalhar `ProgressView` e `Text`.
 struct StateView: View {
 
     enum Content: Equatable {
@@ -18,10 +15,26 @@ struct StateView: View {
         VStack(spacing: Theme.Spacing.m) {
             switch content {
             case .loading(let message):
-                ProgressView()
-                    .controlSize(.large)
-                if let message {
-                    messageText(message)
+                VStack(spacing: Theme.Spacing.loadingBlock) {
+                    PokeballLoading()
+
+                    if let message {
+                        VStack(spacing: Theme.Spacing.xs) {
+                            Text("VOCÊ SABIA?")
+                                .font(Theme.Font.loadingTriviaLabel)
+                                .foregroundStyle(Theme.Color.loadingTriviaLabel)
+
+                            Text(message)
+                                .font(Theme.Font.loadingTriviaBody)
+                                .foregroundStyle(Theme.Color.loadingTriviaFact)
+                                .multilineTextAlignment(.center)
+                                .lineSpacing(2)
+                                .lineLimit(3)
+                                .frame(maxWidth: 300)
+                        }
+                        .accessibilityElement(children: .combine)
+                        .accessibilityLabel("Você sabia? \(message)")
+                    }
                 }
 
             case .empty(let text):
