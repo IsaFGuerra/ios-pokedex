@@ -39,10 +39,12 @@ final class PokemonListViewModel {
     private var hasNextPage = true
     private var isLoadingNextPage = false
 
-    init() {
-        let repository = RemotePokemonRepository(client: URLSessionHTTPClient())
-        self.fetchPage = DefaultFetchPokemonPageUseCase(repository: repository)
-        self.fetchDetail = DefaultFetchPokemonDetailUseCase(repository: repository)
+    init(
+        fetchPage: FetchPokemonPageUseCase,
+        fetchDetail: FetchPokemonDetailUseCase
+    ) {
+        self.fetchPage = fetchPage
+        self.fetchDetail = fetchDetail
     }
 
     func load() async {

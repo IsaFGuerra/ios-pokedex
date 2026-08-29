@@ -8,8 +8,11 @@ struct PokemonListView: View {
     @State private var notImplemented: String?
     @State private var loadingMessage = PokemonTrivia.random()
 
-    init(viewModel: PokemonListViewModel) {
+    private let fetchDetail: FetchPokemonDetailUseCase
+
+    init(viewModel: PokemonListViewModel, fetchDetail: FetchPokemonDetailUseCase) {
         _viewModel = State(initialValue: viewModel)
+        self.fetchDetail = fetchDetail
     }
 
     var body: some View {
@@ -59,16 +62,8 @@ struct PokemonListView: View {
     private func list(_ rows: [PokemonRowModel]) -> some View {
         List {
             ForEach(Array(rows.enumerated()), id: \.element.id) { index, row in
-                Button {
-                    // TODO (Tarefa 3): abrir a tela de detalhe deste Pokémon.
-                    notImplemented = "Detalhe de \(row.displayName)"
-                } label: {
-                    HStack {
-                        PokemonRow(row: row)
-                        Image(systemName: "chevron.right")
-                            .font(Theme.Font.caption.bold())
-                            .foregroundStyle(Theme.Color.secondaryText)
-                    }
+                NavigationLink(value: row.id) {
+                    PokemonRow(row: row)
                 }
                 .buttonStyle(.plain)
                 .task { await viewModel.loadNextPageIfNeeded(displayingRowAt: index) }
@@ -76,5 +71,10 @@ struct PokemonListView: View {
         }
         .listStyle(.insetGrouped)
         .refreshable { await viewModel.reload() }
+        .navigationDestination(for: Int.self) { id in
+            PokemonDetailView(
+                viewModel: PokemonDetailViewModel(pokemonID: id, fetchDetail: fetchDetail)
+            )
+        }
     }
 }
