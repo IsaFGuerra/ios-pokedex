@@ -19,8 +19,11 @@ struct PokemonListView: View {
     }
 
     var body: some View {
+        @Bindable var viewModel = viewModel
+
         content
             .navigationTitle("Pokédex")
+            .searchable(text: $viewModel.searchText, prompt: "Buscar por nome")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     NavigationLink("Meu Time") {
@@ -37,8 +40,8 @@ struct PokemonListView: View {
         case .loading:
             StateView(content: .loading(message: loadingMessage))
 
-        case .loaded(let rows):
-            list(rows)
+        case .loaded:
+            list(viewModel.filteredRows)
 
         case .empty:
             StateView(content: .empty(message: "Nenhum Pokémon encontrado."))
@@ -55,16 +58,30 @@ struct PokemonListView: View {
 
     private func list(_ rows: [PokemonRowModel]) -> some View {
         List {
-            ForEach(Array(rows.enumerated()), id: \.element.id) { index, row in
-                NavigationLink(value: row.id) {
-                    PokemonRow(row: row)
+            if rows.isEmpty, viewModel.isSearching {
+                Text("Nenhum Pokémon encontrado para \"\(viewModel.searchText)\".")
+                    .font(Theme.Font.body)
+                    .foregroundStyle(Theme.Color.secondaryText)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .listRowBackground(Color.clear)
+            } else {
+                ForEach(Array(rows.enumerated()), id: \.element.id) { index, row in
+                    NavigationLink(value: row.id) {
+                        PokemonRow(row: row)
+                    }
+                    .buttonStyle(.plain)
+                    .task {
+                        guard !viewModel.isSearching else { return }
+                        await viewModel.loadNextPageIfNeeded(displayingRowAt: index)
+                    }
                 }
-                .buttonStyle(.plain)
-                .task { await viewModel.loadNextPageIfNeeded(displayingRowAt: index) }
             }
         }
         .listStyle(.insetGrouped)
-        .refreshable { await viewModel.reload() }
+        .refreshable {
+            viewModel.searchText = ""
+            await viewModel.reload()
+        }
         .navigationDestination(for: Int.self) { id in
             PokemonDetailView(
                 viewModel: PokemonDetailViewModel(
