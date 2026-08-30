@@ -13,7 +13,8 @@ struct PokedexApp: App {
                         fetchPage: dependencies.fetchPage,
                         fetchDetail: dependencies.fetchDetail
                     ),
-                    fetchDetail: dependencies.fetchDetail
+                    fetchDetail: dependencies.fetchDetail,
+                    manageTeam: dependencies.manageTeam
                 )
             }
         }

@@ -39,6 +39,7 @@ enum Theme {
 
     enum Font {
         static let title = SwiftUI.Font.title2
+        static let display = SwiftUI.Font.title.bold()
         static let body = SwiftUI.Font.body
         static let caption = SwiftUI.Font.caption
         static let rowTitle = SwiftUI.Font.body.bold()
@@ -53,5 +54,9 @@ enum Theme {
         static let l: CGFloat = 24
         static let loadingBlock: CGFloat = 32
         static let loadingTrivia: CGFloat = 6
+    }
+
+    enum Radius {
+        static let card: CGFloat = 16
     }
 }

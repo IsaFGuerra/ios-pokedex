@@ -5,11 +5,14 @@ import Foundation
 /// Você é livre para adicionar quaisquer outras regras que ache válidas
 enum TeamError: LocalizedError, Equatable {
     case alreadyInTeam(name: String)
-
+    case teamFull
+    
     var errorDescription: String? {
         switch self {
         case .alreadyInTeam(let name):
             return "\(name) já está no seu time."
+        case .teamFull:
+            return "O time já tem \(Team.maxSize) Pokémon."
         }
     }
 }
@@ -26,34 +29,50 @@ protocol ManageTeamUseCase {
 }
 
 final class DefaultManageTeamUseCase: ManageTeamUseCase {
-
+    
     private let repository: TeamRepository
-
+    
     init(repository: TeamRepository) {
         self.repository = repository
     }
-
-    // MARK: - TODO (Tarefa 4)
-    //
-    // O contrato esperado:
-    //
-    // - `add`: adiciona novo Pokémon no time
-    // - `remove`: remove Pokémon do time pelo id
-    // - `summary`: ver a documentação de `TeamSummary` em `Model/Team.swift`.
-
+    
     func currentTeam() -> [TeamMember] {
         repository.load()
     }
-
+    
     func add(_ member: TeamMember) throws {
-        fatalError("TODO: Tarefa 4")
+        var team = repository.load()
+        
+        if team.contains(where: { $0.id == member.id }) {
+            throw TeamError.alreadyInTeam(name: member.name)
+        }
+        
+        if team.count >= Team.maxSize {
+            throw TeamError.teamFull
+        }
+        
+        team.append(member)
+        repository.save(team)
     }
-
+    
     func remove(id: Int) {
-        fatalError("TODO: Tarefa 4")
+        var team = repository.load()
+        team.removeAll { $0.id == id }
+        repository.save(team)
     }
-
+    
     func summary() -> TeamSummary {
-        fatalError("TODO: Tarefa 4")
+        let team = repository.load()
+        var coveredTypes: [String] = []
+        
+        for member in team {
+            for type in member.types {
+                if !coveredTypes.contains(type) {
+                    coveredTypes.append(type)
+                }
+            }
+        }
+        
+        return TeamSummary(count: team.count, coveredTypes: coveredTypes)
     }
 }
