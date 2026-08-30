@@ -78,8 +78,6 @@ Na minha solução, `PokemonListView` ainda recebe `fetchDetail` e `manageTeam` 
 
 ## O que ficou de fora
 
-## O que ficou de fora
-
 O principal ponto que ficou de fora são testes do `PokemonListViewModel`. Ele concentra boa parte do comportamento da lista, então considero essa a próxima cobertura de testes mais importante. Durante o desenvolvimento, separei os cenários que gostaria de cobrir: transições de `load` para `.loading`, `.loaded`, `.empty` e `.failure`; `reload` voltando ao `offset = 0`; não paginar quando o usuário ainda está longe do fim; iniciar a próxima página ao entrar nos últimos cinco itens; validar o `offset` usado; fazer append da nova página; interromper novas buscas quando `hasNextPage` for `false`, quando o estado não for `.loaded` ou quando uma página nova vier vazia; e preservar o estado atual caso a paginação falhe.
 
 Também deixei para uma evolução o tratamento visual de erro durante a paginação. Hoje, se a próxima página falha, mantenho a lista já carregada e não troco o estado principal para `.failure`. Com mais tempo, eu faria uma tentativa automática adicional e, se ela também falhasse, mostraria um aviso leve no fim da lista, mantendo o conteúdo existente e permitindo retry manual sem entrar em um loop de novas tentativas.
