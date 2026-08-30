@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Design system mínimo do app.
 enum Theme {
 
     enum Color {
@@ -10,11 +9,9 @@ enum Theme {
         static let secondaryText = SwiftUI.Color.secondary
         static let accent = SwiftUI.Color.indigo
 
-        /// Texto secundário do loading — um pouco mais legível que `.secondary`.
         static let loadingTriviaLabel = SwiftUI.Color.primary.opacity(0.45)
         static let loadingTriviaFact = SwiftUI.Color.primary.opacity(0.62)
 
-        /// Cor  representando cada tipo de pokemon
         static func forPokemonType(_ type: String) -> SwiftUI.Color {
             switch type.lowercased() {
             case "normal":   return SwiftUI.Color(red: 0.66, green: 0.66, blue: 0.47)

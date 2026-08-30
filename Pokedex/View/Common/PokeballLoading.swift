@@ -2,7 +2,6 @@ import ImageIO
 import SwiftUI
 import UIKit
 
-/// Pokébola animada para o estado de loading (`Pokeball.gif`).
 struct PokeballLoading: View {
 
     private let size: CGFloat = 56
