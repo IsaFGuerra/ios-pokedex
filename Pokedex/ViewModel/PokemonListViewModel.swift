@@ -30,6 +30,7 @@ final class PokemonListViewModel {
     }
 
     private(set) var state: State = .loading
+    var searchText = ""
 
     private let fetchPage: FetchPokemonPageUseCase
     private let fetchDetail: FetchPokemonDetailUseCase
@@ -43,6 +44,17 @@ final class PokemonListViewModel {
     ) {
         self.fetchPage = fetchPage
         self.fetchDetail = fetchDetail
+    }
+
+    var isSearching: Bool {
+        !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    var filteredRows: [PokemonRowModel] {
+        guard case .loaded(let rows) = state else { return [] }
+        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !query.isEmpty else { return rows }
+        return rows.filter { $0.displayName.localizedCaseInsensitiveContains(query) }
     }
 
     func load() async {
@@ -75,6 +87,7 @@ final class PokemonListViewModel {
     }
 
     func loadNextPageIfNeeded(displayingRowAt index: Int) async {
+        guard !isSearching else { return }
         guard case .loaded(let rows) = state else { return }
         guard hasNextPage, !isLoadingNextPage else { return }
 
