@@ -4,6 +4,7 @@ struct PokemonDetailView: View {
 
     @State private var viewModel: PokemonDetailViewModel
     @State private var showTeamAlert = false
+    @State private var showsContent = false
 
     init(viewModel: PokemonDetailViewModel) {
         _viewModel = State(initialValue: viewModel)
@@ -47,8 +48,16 @@ struct PokemonDetailView: View {
             .padding(.horizontal, Theme.Spacing.m)
             .padding(.vertical, Theme.Spacing.l)
             .frame(maxWidth: .infinity)
+            .opacity(showsContent ? 1 : 0)
         }
         .background(Theme.Color.background)
+        .onAppear {
+            guard !showsContent else { return }
+            withAnimation(.easeOut(duration: 0.25)) {
+                showsContent = true
+            }
+        }
+        .onDisappear { showsContent = false }
     }
 
     private func header(_ pokemon: PokemonDetail) -> some View {
