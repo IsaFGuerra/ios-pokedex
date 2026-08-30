@@ -3,14 +3,19 @@ import SwiftUI
 struct PokemonListView: View {
 
     @State private var viewModel: PokemonListViewModel
-    @State private var notImplemented: String?
     @State private var loadingMessage = PokemonTrivia.random()
 
     private let fetchDetail: FetchPokemonDetailUseCase
+    private let manageTeam: ManageTeamUseCase
 
-    init(viewModel: PokemonListViewModel, fetchDetail: FetchPokemonDetailUseCase) {
+    init(
+        viewModel: PokemonListViewModel,
+        fetchDetail: FetchPokemonDetailUseCase,
+        manageTeam: ManageTeamUseCase
+    ) {
         _viewModel = State(initialValue: viewModel)
         self.fetchDetail = fetchDetail
+        self.manageTeam = manageTeam
     }
 
     var body: some View {
@@ -18,18 +23,10 @@ struct PokemonListView: View {
             .navigationTitle("Pokédex")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Meu Time") {
-                        notImplemented = "Meu Time"
+                    NavigationLink("Meu Time") {
+                        TeamView(viewModel: TeamViewModel(manageTeam: manageTeam))
                     }
                 }
-            }
-            .alert(
-                notImplemented ?? "",
-                isPresented: .constant(notImplemented != nil)
-            ) {
-                Button("OK") { notImplemented = nil }
-            } message: {
-                Text("Tela ainda não implementada.")
             }
             .task { await viewModel.load() }
     }
@@ -70,7 +67,11 @@ struct PokemonListView: View {
         .refreshable { await viewModel.reload() }
         .navigationDestination(for: Int.self) { id in
             PokemonDetailView(
-                viewModel: PokemonDetailViewModel(pokemonID: id, fetchDetail: fetchDetail)
+                viewModel: PokemonDetailViewModel(
+                    pokemonID: id,
+                    fetchDetail: fetchDetail,
+                    manageTeam: manageTeam
+                )
             )
         }
     }
