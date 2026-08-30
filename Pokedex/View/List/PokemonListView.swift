@@ -19,7 +19,6 @@ struct PokemonListView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Meu Time") {
-                        // TODO (Tarefa 4): apresentar a tela "Meu Time".
                         notImplemented = "Meu Time"
                     }
                 }

@@ -1,6 +1,5 @@
 import Foundation
 
-/// O que uma linha da lista precisa para se desenhar.
 struct PokemonRowModel: Identifiable, Equatable {
     let id: Int
     let displayName: String
@@ -30,7 +29,6 @@ final class PokemonListViewModel {
         case failure(message: String)
     }
 
-    /// A View observa isto. O ViewModel nunca importa SwiftUI.
     private(set) var state: State = .loading
 
     private let fetchPage: FetchPokemonPageUseCase
@@ -75,8 +73,6 @@ final class PokemonListViewModel {
             state = .failure(message: error.localizedDescription)
         }
     }
-
-    // MARK: - Paginação
 
     func loadNextPageIfNeeded(displayingRowAt index: Int) async {
         guard case .loaded(let rows) = state else { return }
