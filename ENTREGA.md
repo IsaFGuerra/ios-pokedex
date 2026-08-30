@@ -56,7 +56,7 @@ No `TeamSummary`, implementei `count` e `coveredTypes`. Os tipos são apresentad
 
 A tela usa `TeamView` + `TeamViewModel`, reaproveita `StateView` no estado vazio, permite remover por swipe e mostra o resumo no cabeçalho. Também extraí `PokemonTypeTag` para `View/Common/`, já que a mesma representação de tipo passou a aparecer na lista, no detalhe e no time. A persistência existente em `UserDefaultsTeamRepository` foi mantida.
 
-A regra adicional de impedir Pokémon com o mesmo tipo principal ficou como melhoria futura no `TODO.md`. Além de não fazer parte do contrato mínimo, ela exigiria definir explicitamente o que o domínio considera como tipo principal. Para esta entrega, priorizei duplicidade por `id` e limite de seis membros.
+A regra adicional de impedir Pokémon com o mesmo tipo principal ficou como melhoria futura. Além de não fazer parte do contrato mínimo, ela exigiria definir explicitamente o que o domínio considera como tipo principal. Para esta entrega, priorizei duplicidade por `id` e limite de seis membros.
 
 ## Bônus — busca, imagens e pequenos refinamentos
 
@@ -78,10 +78,14 @@ Na minha solução, `PokemonListView` ainda recebe `fetchDetail` e `manageTeam` 
 
 ## O que ficou de fora
 
-O principal ponto que ficou de fora são testes do `PokemonListViewModel`. Ele concentra comportamento de paginação, append, threshold, busca e controle para não iniciar páginas repetidas, então considero essa a próxima cobertura de testes mais importante. Deixei os cenários que eu gostaria de testar registrados no `TODO.md`.
+O principal ponto que ficou de fora são testes do `PokemonListViewModel`. Ele concentra boa parte do comportamento da lista, então considero essa a próxima cobertura de testes mais importante. Durante o desenvolvimento, separei os cenários que gostaria de cobrir: transições de `load` para `.loading`, `.loaded`, `.empty` e `.failure`; `reload` voltando ao `offset = 0`; não paginar quando o usuário ainda está longe do fim; iniciar a próxima página ao entrar nos últimos cinco itens; validar o `offset` usado; fazer append da nova página; interromper novas buscas quando `hasNextPage` for `false`, quando o estado não for `.loaded` ou quando uma página nova vier vazia; e preservar o estado atual caso a paginação falhe.
 
-Também não implementei o tratamento visual de erro durante a paginação, a regra extra de tipo principal repetido e a deduplicação de duas requisições de detalhe que estejam simultaneamente em andamento para o mesmo id.
+Também deixei para uma evolução o tratamento visual de erro durante a paginação. Hoje, se a próxima página falha, mantenho a lista já carregada e não troco o estado principal para `.failure`. Com mais tempo, eu faria uma tentativa automática adicional e, se ela também falhasse, mostraria um aviso leve no fim da lista, mantendo o conteúdo existente e permitindo retry manual sem entrar em um loop de novas tentativas.
+
+Na Tarefa 4, a regra extra de impedir dois Pokémon com o mesmo tipo principal também ficou de fora do escopo mínimo. Caso ela virasse uma regra do produto, além de definir explicitamente o que representa o “tipo principal”, eu adicionaria testes cobrindo tanto a rejeição de dois membros com o mesmo tipo quanto a adição de tipos principais diferentes.
+
+Por fim, o cache de detalhes ainda não deduplica duas requisições que estejam simultaneamente em andamento para o mesmo `id`. O `actor` protege o estado compartilhado do cache, mas uma evolução seria também acompanhar requests em andamento para evitar trabalho de rede duplicado.
 
 ## Com mais tempo
 
-Minha ordem de prioridade seria: testar o `PokemonListViewModel`; melhorar o erro e retry da próxima página sem apagar a lista; evoluir a busca local para uma busca global caso isso fosse requisito de produto; deduplicar requests de detalhe em andamento para o mesmo id; e, conforme a navegação crescesse, simplificar a composição das dependências das telas.
+Minha ordem de prioridade seria: concluir os testes do `PokemonListViewModel`; melhorar erro e retry da próxima página sem apagar a lista; evoluir a busca local para uma busca global caso isso fosse requisito de produto; definir e testar a regra de tipo principal caso ela entrasse no produto; deduplicar requests de detalhe em andamento para o mesmo `id`; e, conforme a navegação crescesse, simplificar a composição das dependências das telas.
