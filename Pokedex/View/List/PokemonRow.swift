@@ -26,14 +26,10 @@ struct PokemonRow: View {
 
             HStack(spacing: Theme.Spacing.xs) {
                 ForEach(row.types, id: \.self) { type in
-                    Text(type)
-                        .font(Theme.Font.caption.bold())
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, Theme.Spacing.s)
-                        .padding(.vertical, Theme.Spacing.xs)
-                        .background(Theme.Color.forPokemonType(type), in: Capsule())
+                    PokemonTypeTag(type: type)
                 }
             }
+            .fixedSize(horizontal: true, vertical: false)
         }
         .padding(.vertical, Theme.Spacing.xs)
         .accessibilityElement(children: .combine)

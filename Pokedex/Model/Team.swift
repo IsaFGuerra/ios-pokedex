@@ -6,6 +6,7 @@ struct TeamMember: Codable, Equatable {
     let id: Int
     let name: String
     let spriteURL: URL?
+    let types: [String]
 }
 
 /// Resumo do time para ser exibido no topo da tela "Meu Time"
