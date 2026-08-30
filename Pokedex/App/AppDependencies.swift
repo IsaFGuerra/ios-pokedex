@@ -1,7 +1,5 @@
 import Foundation
 
-/// Composition root: um repositório compartilhado para lista e detalhe
-/// reutilizarem o mesmo cache de `PokemonDetail`.
 struct AppDependencies {
 
     let fetchPage: FetchPokemonPageUseCase

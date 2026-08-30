@@ -1,6 +1,5 @@
 import Foundation
 
-/// Uma página da listagem de Pokémon.
 struct PokemonPage: Equatable {
     let items: [PokemonListEntry]
     let totalCount: Int
